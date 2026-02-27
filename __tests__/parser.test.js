@@ -110,7 +110,6 @@ describe('Parser Tests', () => {
       expect(() => parse("3 +")).toThrow();
       expect(() => parse("+ 3")).toThrow();
       expect(() => parse("3 + + 4")).toThrow();
-      expect(() => parse("3.5")).toThrow(); // Only integers are supported
     });
 
     test('should handle incomplete expressions', () => {
@@ -128,4 +127,28 @@ describe('Parser Tests', () => {
     });
   });
 
+  describe('Pruebas del Analizador Léxico y Sintáctico', () => {
+    test('Debe ignorar los comentarios de una sola línea', () => {
+      expect(parse('5 + 3 // Esto es un comentario de prueba')).toBe(8);
+      expect(parse('10 // 2 + 2')).toBe(10); 
+    });
+
+    test('Debe reconocer y operar con números en punto flotante', () => {
+      expect(parse('2.5 + 2.5')).toBe(5);
+      expect(parse('10.5 - 0.5')).toBe(10);
+      expect(parse('3.14 * 2')).toBe(6.28);
+      expect(parse('23')).toBe(23);
+    });
+
+    test('Debe reconocer números en notación científica', () => {
+      expect(parse('2.35e-3')).toBe(0.00235);
+      expect(parse('2.35e+3')).toBe(2350);
+      expect(parse('2.35E-3')).toBe(0.00235);
+      expect(parse('2e3')).toBe(2000);
+    });
+
+    test('Debe procesar expresiones complejas combinando flotantes y comentarios', () => {
+      expect(parse('2.5 * 2e2 // Multiplicando un decimal por notación científica')).toBe(500);
+    });
+  });
 });
